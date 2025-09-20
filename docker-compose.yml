@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  twitter-analysis:
+    build: .
+    container_name: twitter-layoffs-analysis
+    volumes:
+      - ./output:/app/output
+      - ./data:/app/data
+      - ./notebooks:/app/notebooks
+      - ./config:/app/config
+    environment:
+      - PYTHONPATH=/app/src
+      - JUPYTER_ENABLE_LAB=yes
+    ports:
+      - "8888:8888"
+    command: >
+      bash -c "
+        echo 'Starting Twitter Analysis Environment...' &&
+        jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
+      "
+    restart: unless-stopped
+    
+  # Optional: Add a database service for storing results
+  postgres:
+    image: postgres:15-alpine
+    container_name: twitter-analysis-db
+    environment:
+      POSTGRES_DB: twitter_analysis
+      POSTGRES_USER: analyst
+      POSTGRES_PASSWORD: analysis123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # Optional: Add Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: twitter-analysis-cache
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: twitter-analysis-network
