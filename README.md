@@ -34,22 +34,3 @@ This project involves the comprehensive analysis of Twitter data related to layo
     - Utilized the pretrained model "distilbert-base-uncased-finetuned-sst-2-english" to predict and plot the distribution of emotions in the text data.
 
 ## Setup Instructions
-
-To run the `milano.ipynb` notebook, follow these steps to set up the required environment and dependencies.
-
-
-
-```bash
-
-Create Virtual Environment
-
-python3 -m venv .env
-
-Activate the virtual environment
-
-.env\scripts\activate
-
-Install the required dependencies
-
-python3 -m pip install -r requirements.txt
-
