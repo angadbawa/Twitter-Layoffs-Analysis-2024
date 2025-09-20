@@ -1,36 +1,69 @@
-# Twitter Data Analysis on Layoffs
+# Twitter Layoffs Analysis 2024
 
-This project involves the comprehensive analysis of Twitter data related to layoffs using various data science and natural language processing (NLP) techniques. The main objectives include data scraping, preprocessing, sentiment analysis, topic modeling, named entity recognition, keyword extraction, and emotion analysis.
+Functional programming approach to analyzing Twitter data related to layoffs using NLP and ML techniques.
 
-## Key Steps
+## Features
 
-1. **Data Scraping:**
-    - Extracted relevant Twitter data using ntscraper and nitter.
+- **Data Scraping**: Twitter data collection using ntscraper
+- **Text Processing**: Functional cleaning and preprocessing pipelines  
+- **Sentiment Analysis**: BERT-based sentiment classification
+- **Topic Modeling**: LDA-based topic discovery
+- **NER**: Company and person extraction
+- **Visualization**: Interactive dashboards and plots
 
-2. **Library Import:**
-    - Imported essential Python libraries: pandas, numpy, re, matplotlib, gensim, spacy, sklearn, and transformers.
+## Quick Setup
 
-3. **Data Preprocessing and Cleaning:**
-    - Understood data types, removed duplicates, and checked for null values.
-    - Cleaned text data by removing mentions, emails, numbers, hashtags, links, emojis, unnecessary punctuation, and stopwords using regular expressions.
+### Automated Setup
+```bash
+# Linux/Mac
+chmod +x setup.sh && ./setup.sh
 
-4. **Sentiment Analysis:**
-    - Utilized the pretrained model "nlptown/bert-base-multilingual-uncased-sentiment" to analyze sentiment in the text data.
-    - Plotted the distribution of sentiment scores.
+# Windows
+setup.bat
+```
 
-5. **Topic Modeling:**
-    - Applied the LDA (Latent Dirichlet Allocation) model to identify topics.
-    - Displayed the top words for each topic and plotted topic distributions.
-    - Used PCA for dimensionality reduction and K-means clustering to visualize topics in a scatter plot.
+### Manual Setup
+```bash
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
+```
 
-6. **Named Entity Recognition (NER):**
-    - Employed the model 'en_core_web_sm' for NER to extract and plot the distribution of company names and key individuals mentioned.
+### Docker
+```bash
+docker-compose up
+```
 
-7. **Keyword Extraction:**
-    - Applied TFIDF Vectorizer to extract and score keywords.
-    - Plotted the distribution of the top 20 keywords based on their TF-IDF scores.
+## Usage
 
-8. **Emotion Analysis:**
-    - Utilized the pretrained model "distilbert-base-uncased-finetuned-sst-2-english" to predict and plot the distribution of emotions in the text data.
+```bash
+# Run full analysis
+python src/main.py --mode full --num-tweets 500
 
-## Setup Instructions
+# Collect data only
+python src/main.py --mode collect --num-tweets 1000
+
+# Start Jupyter
+jupyter lab
+```
+
+## Project Structure
+
+```
+src/
+├── twitter_analysis/
+│   ├── data/          # Data collection and loading
+│   ├── preprocessing/ # Text cleaning and transformation  
+│   ├── analysis/      # ML and NLP analysis
+│   ├── visualization/ # Plotting and dashboards
+│   └── utils/         # Helper functions
+└── main.py           # CLI entry point
+```
+
+## Functional Programming Features
+
+- Pure functions with no side effects
+- Function composition with `compose()` and `pipe()`
+- Immutable data transformations
+- Higher-order functions and partial application
+- Memoization for performance optimization
