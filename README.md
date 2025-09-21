@@ -38,7 +38,7 @@ This project involves the comprehensive analysis of Twitter data related to layo
 ```bash
 docker-compose up
 ```
-
+or
 ```bash
 
 Create Virtual Environment
