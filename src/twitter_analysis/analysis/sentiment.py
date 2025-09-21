@@ -5,7 +5,7 @@ import logging
 from functools import partial
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 import torch
-from ..utils.helpers import timer, memoize, safe_execute, chunk_list
+from ..utils.helpers import memoize, safe_execute, chunk_list
 from ..utils.config import get_config
 
 
@@ -138,7 +138,6 @@ def analyze_single_text_sentiment(text: str, model: pipeline) -> Dict[str, Any]:
         }
 
 
-@timer
 def analyze_batch_sentiment(texts: List[str], model: pipeline, batch_size: int = 32) -> List[Dict[str, Any]]:
     """
     Analyze sentiment for a batch of texts.
@@ -170,7 +169,6 @@ def analyze_batch_sentiment(texts: List[str], model: pipeline, batch_size: int =
     return results
 
 
-@timer
 def analyze_tweets_sentiment(df: pd.DataFrame, text_column: str = 'text_cleaned',
                            model_name: str = None, batch_size: int = 32) -> pd.DataFrame:
     """

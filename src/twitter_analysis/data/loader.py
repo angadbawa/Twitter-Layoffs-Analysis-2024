@@ -2,11 +2,10 @@ from typing import Optional, Dict, Any, List
 import pandas as pd
 import logging
 from pathlib import Path
-from ..utils.helpers import timer, safe_execute
+from ..utils.helpers import safe_execute
 from ..utils.config import get_output_path, get_config
 
 
-@timer
 @safe_execute
 def load_tweets_csv(file_path: str) -> Optional[pd.DataFrame]:
     """
@@ -27,7 +26,6 @@ def load_tweets_csv(file_path: str) -> Optional[pd.DataFrame]:
         return None
 
 
-@timer
 @safe_execute
 def save_tweets_csv(df: pd.DataFrame, filename: str = None) -> bool:
     """
@@ -53,7 +51,6 @@ def save_tweets_csv(df: pd.DataFrame, filename: str = None) -> bool:
         return False
 
 
-@timer
 def load_or_create_tweets(file_path: str = None, scrape_if_missing: bool = True) -> pd.DataFrame:
     """
     Load tweets from file or create new dataset if file doesn't exist.
@@ -89,7 +86,6 @@ def load_or_create_tweets(file_path: str = None, scrape_if_missing: bool = True)
         return pd.DataFrame()
 
 
-@timer
 def validate_tweets_dataframe(df: pd.DataFrame) -> bool:
     """
     Validate that DataFrame has required columns for tweet analysis.
@@ -120,7 +116,6 @@ def validate_tweets_dataframe(df: pd.DataFrame) -> bool:
     return True
 
 
-@timer
 def get_dataset_info(df: pd.DataFrame) -> Dict[str, Any]:
     """
     Get information about the dataset.
@@ -153,7 +148,6 @@ def get_dataset_info(df: pd.DataFrame) -> Dict[str, Any]:
     return info
 
 
-@timer
 def sample_tweets(df: pd.DataFrame, n: int = 100, random_state: int = 42) -> pd.DataFrame:
     """
     Get a random sample of tweets.
@@ -173,7 +167,6 @@ def sample_tweets(df: pd.DataFrame, n: int = 100, random_state: int = 42) -> pd.
     return df.sample(n=sample_size, random_state=random_state)
 
 
-@timer
 def filter_tweets_by_date(df: pd.DataFrame, start_date: str = None, end_date: str = None) -> pd.DataFrame:
     """
     Filter tweets by date range.
@@ -206,7 +199,6 @@ def filter_tweets_by_date(df: pd.DataFrame, start_date: str = None, end_date: st
     return df_filtered
 
 
-@timer
 def export_tweets_json(df: pd.DataFrame, filename: str = "tweets.json") -> bool:
     """
     Export tweets to JSON format.

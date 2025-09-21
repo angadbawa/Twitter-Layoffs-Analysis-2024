@@ -4,7 +4,7 @@ import pandas as pd
 import logging
 from ntscraper import Nitter
 import tweepy
-from ..utils.helpers import timer, safe_execute, memoize
+from ..utils.helpers import safe_execute, memoize
 from ..utils.config import get_config
 
 def initialize_nitter_scraper(log_level: int = 1, skip_instance_check: bool = False) -> Nitter:
@@ -21,7 +21,6 @@ def initialize_nitter_scraper(log_level: int = 1, skip_instance_check: bool = Fa
     return Nitter(log_level=log_level, skip_instance_check=skip_instance_check)
 
 
-@timer
 def scrape_tweets_by_hashtag(scraper: Nitter, hashtag: str, num_tweets: int) -> List[Dict[str, Any]]:
     """
     Scrape tweets by hashtag using functional approach.
@@ -42,7 +41,6 @@ def scrape_tweets_by_hashtag(scraper: Nitter, hashtag: str, num_tweets: int) -> 
         return []
 
 
-@timer
 def scrape_tweets_by_keyword(scraper: Nitter, keyword: str, num_tweets: int) -> List[Dict[str, Any]]:
     """
     Scrape tweets by keyword search.
@@ -82,7 +80,6 @@ def create_tweet_scraper(scraper: Nitter, mode: str = "hashtag") -> Callable[[st
         raise ValueError(f"Unsupported scraping mode: {mode}")
 
 
-@timer
 def scrape_multiple_hashtags(scraper: Nitter, hashtags: List[str], tweets_per_hashtag: int) -> List[Dict[str, Any]]:
     """
     Scrape tweets from multiple hashtags.
@@ -135,7 +132,6 @@ def extract_tweet_features(tweet: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-@timer
 def process_scraped_tweets(tweets: List[Dict[str, Any]]) -> pd.DataFrame:
     """
     Process scraped tweets into a clean DataFrame.
@@ -166,7 +162,6 @@ def process_scraped_tweets(tweets: List[Dict[str, Any]]) -> pd.DataFrame:
     return df
 
 
-@timer
 def scrape_layoff_tweets(num_tweets: int = None, hashtags: List[str] = None) -> pd.DataFrame:
     """
     Main function to scrape layoff-related tweets.

@@ -5,11 +5,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.preprocessing import LabelEncoder
 import logging
 from functools import partial
-from ..utils.helpers import timer, pipe, memoize
+from ..utils.helpers import pipe, memoize
 from ..utils.config import get_config
 
 
-@timer
 def create_tfidf_features(texts: List[str], max_features: int = 1000, 
                          min_df: int = 2, max_df: float = 0.8,
                          ngram_range: Tuple[int, int] = (1, 2)) -> Tuple[np.ndarray, TfidfVectorizer]:
@@ -40,7 +39,6 @@ def create_tfidf_features(texts: List[str], max_features: int = 1000,
     return features.toarray(), vectorizer
 
 
-@timer
 def create_count_features(texts: List[str], max_features: int = 1000,
                          min_df: int = 2, max_df: float = 0.8,
                          ngram_range: Tuple[int, int] = (1, 1)) -> Tuple[np.ndarray, CountVectorizer]:
@@ -96,7 +94,6 @@ def extract_text_statistics(text: str) -> Dict[str, Any]:
     }
 
 
-@timer
 def add_text_features(df: pd.DataFrame, text_column: str = 'text_cleaned') -> pd.DataFrame:
     """
     Add text-based features to DataFrame.
@@ -114,16 +111,9 @@ def add_text_features(df: pd.DataFrame, text_column: str = 'text_cleaned') -> pd
     
     df_enhanced = df.copy()
     
-    # Extract text statistics for each row
     text_stats = df_enhanced[text_column].apply(extract_text_statistics)
-    
-    # Convert to DataFrame and add to original
     stats_df = pd.DataFrame(text_stats.tolist())
-    
-    # Add prefix to avoid column name conflicts
     stats_df.columns = [f'text_{col}' for col in stats_df.columns]
-    
-    # Concatenate with original DataFrame
     df_enhanced = pd.concat([df_enhanced, stats_df], axis=1)
     
     logging.info(f"Added {len(stats_df.columns)} text features")
@@ -195,7 +185,6 @@ def encode_categorical_features(df: pd.DataFrame, categorical_columns: List[str]
     return df_encoded, encoders
 
 
-@timer
 def create_feature_matrix(df: pd.DataFrame, text_column: str = 'text_cleaned',
                          include_text_stats: bool = True,
                          include_temporal: bool = True,
@@ -220,20 +209,17 @@ def create_feature_matrix(df: pd.DataFrame, text_column: str = 'text_cleaned',
     df_features = df.copy()
     feature_names = []
     metadata = {}
-    
-    # Add text statistics
+
     if include_text_stats:
         df_features = add_text_features(df_features, text_column)
         text_stat_columns = [col for col in df_features.columns if col.startswith('text_')]
         feature_names.extend(text_stat_columns)
     
-    # Add temporal features
     if include_temporal and 'date' in df_features.columns:
         df_features = extract_temporal_features(df_features)
         temporal_columns = ['year', 'month', 'day', 'hour', 'day_of_week', 'is_weekend', 'quarter']
         feature_names.extend([col for col in temporal_columns if col in df_features.columns])
     
-    # Create text features
     config = get_config("analysis")
     texts = df_features[text_column].tolist()
     
@@ -252,11 +238,9 @@ def create_feature_matrix(df: pd.DataFrame, text_column: str = 'text_cleaned',
             max_df=config["max_df"]
         )
     
-    # Add text feature names
     text_feature_names = [f'text_vec_{i}' for i in range(text_features.shape[1])]
     feature_names.extend(text_feature_names)
-    
-    # Combine all features
+
     other_features = df_features[feature_names[:-len(text_feature_names)]].values if feature_names[:-len(text_feature_names)] else np.array([]).reshape(len(df_features), 0)
     
     if other_features.size > 0:
@@ -312,7 +296,6 @@ def normalize_features(features: np.ndarray, method: str = 'standard') -> Tuple[
     return normalized_features, metadata
 
 
-# Specialized transformation pipelines
 def create_sentiment_features(df: pd.DataFrame, text_column: str = 'text_cleaned') -> Tuple[np.ndarray, List[str]]:
     """Create features optimized for sentiment analysis."""
     features, names, _ = create_feature_matrix(

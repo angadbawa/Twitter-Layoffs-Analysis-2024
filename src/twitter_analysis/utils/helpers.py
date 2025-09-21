@@ -74,24 +74,6 @@ def memoize(func: Callable) -> Callable:
     return memoized
 
 
-def timer(func: Callable) -> Callable:
-    """
-    Decorator to time function execution.
-    
-    Args:
-        func: Function to time
-        
-    Returns:
-        Timed function
-    """
-    @wraps(func)
-    def timed(*args, **kwargs):
-        start_time = time.time()
-        result = func(*args, **kwargs)
-        end_time = time.time()
-        logging.info(f"{func.__name__} executed in {end_time - start_time:.4f} seconds")
-        return result
-    return timed
 
 
 def safe_execute(func: Callable, default: Any = None) -> Callable:

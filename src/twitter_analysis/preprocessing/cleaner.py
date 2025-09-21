@@ -3,11 +3,9 @@ import re
 import pandas as pd
 import logging
 from functools import partial
-from ..utils.helpers import compose, pipe, timer
+from ..utils.helpers import compose, pipe
 from ..utils.config import get_config
 
-
-# Regex patterns for cleaning
 PATTERNS = {
     'mentions': r'@\w+',
     'hashtags': r'#\w+',
@@ -168,7 +166,6 @@ def create_custom_cleaner(*cleaning_functions: Callable[[str], str]) -> Callable
     return compose(*cleaning_functions)
 
 
-@timer
 def clean_text_series(series: pd.Series, cleaner: Callable[[str], str] = moderate_clean) -> pd.Series:
     """
     Clean a pandas Series of text using specified cleaner.
@@ -183,7 +180,6 @@ def clean_text_series(series: pd.Series, cleaner: Callable[[str], str] = moderat
     return series.astype(str).apply(cleaner)
 
 
-@timer
 def clean_tweets_dataframe(df: pd.DataFrame, text_column: str = 'text', 
                           cleaner: Callable[[str], str] = moderate_clean,
                           create_new_column: bool = True) -> pd.DataFrame:
@@ -205,7 +201,6 @@ def clean_tweets_dataframe(df: pd.DataFrame, text_column: str = 'text',
     
     df_cleaned = df.copy()
     
-    # Apply cleaning
     cleaned_text = clean_text_series(df_cleaned[text_column], cleaner)
     
     if create_new_column:
@@ -213,7 +208,6 @@ def clean_tweets_dataframe(df: pd.DataFrame, text_column: str = 'text',
     else:
         df_cleaned[text_column] = cleaned_text
     
-    # Remove empty texts after cleaning
     if create_new_column:
         df_cleaned = df_cleaned[df_cleaned[f'{text_column}_cleaned'].str.strip() != '']
     else:
@@ -241,12 +235,10 @@ def validate_cleaned_text(text: str, min_length: int = 10) -> bool:
     if len(text) < min_length:
         return False
     
-    # Check if text has meaningful content (not just whitespace/punctuation)
     word_count = len(text.split())
     return word_count >= 2
 
 
-@timer
 def filter_valid_tweets(df: pd.DataFrame, text_column: str = 'text_cleaned', 
                        min_length: int = 10) -> pd.DataFrame:
     """
@@ -263,15 +255,12 @@ def filter_valid_tweets(df: pd.DataFrame, text_column: str = 'text_cleaned',
     if df.empty or text_column not in df.columns:
         return df
     
-    # Apply validation
     valid_mask = df[text_column].apply(lambda x: validate_cleaned_text(x, min_length))
     df_filtered = df[valid_mask].copy()
     
     logging.info(f"Filtered to {len(df_filtered)} valid tweets (removed {len(df) - len(df_filtered)} invalid)")
     return df_filtered
 
-
-# Specialized cleaners for different use cases
 sentiment_cleaner = create_custom_cleaner(
     normalize_whitespace,
     remove_urls,

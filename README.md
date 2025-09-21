@@ -11,24 +11,6 @@ Functional programming approach to analyzing Twitter data related to layoffs usi
 - **NER**: Company and person extraction
 - **Visualization**: Interactive dashboards and plots
 
-## Quick Setup
-
-### Automated Setup
-```bash
-# Linux/Mac
-chmod +x setup.sh && ./setup.sh
-
-# Windows
-setup.bat
-```
-
-### Manual Setup
-```bash
-pip install -r requirements.txt
-python -m spacy download en_core_web_sm
-python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
-```
-
 ### Docker
 ```bash
 docker-compose up
@@ -59,11 +41,3 @@ src/
 │   └── utils/         # Helper functions
 └── main.py           # CLI entry point
 ```
-
-## Functional Programming Features
-
-- Pure functions with no side effects
-- Function composition with `compose()` and `pipe()`
-- Immutable data transformations
-- Higher-order functions and partial application
-- Memoization for performance optimization

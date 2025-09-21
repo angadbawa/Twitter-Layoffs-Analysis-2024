@@ -8,7 +8,6 @@ from plotly.subplots import make_subplots
 import logging
 from pathlib import Path
 
-from ..utils.helpers import timer
 from ..utils.config import get_config, get_output_path
 
 
@@ -17,7 +16,6 @@ plt.style.use('seaborn-v0_8')
 sns.set_palette("husl")
 
 
-@timer
 def create_sentiment_distribution_plot(df: pd.DataFrame, save_path: str = None) -> None:
     """
     Create sentiment distribution visualization.
@@ -56,7 +54,6 @@ def create_sentiment_distribution_plot(df: pd.DataFrame, save_path: str = None) 
     logging.info(f"Saved sentiment distribution plot to {save_path}")
 
 
-@timer
 def create_sentiment_timeline_plot(df: pd.DataFrame, save_path: str = None) -> None:
     """
     Create sentiment timeline visualization.
@@ -79,7 +76,6 @@ def create_sentiment_timeline_plot(df: pd.DataFrame, save_path: str = None) -> N
         'sentiment_label'
     ]).size().unstack(fill_value=0)
     
-    # Create plot
     fig, ax = plt.subplots(figsize=(12, 6))
     
     timeline_data.plot(kind='area', stacked=True, ax=ax, alpha=0.7)
@@ -91,7 +87,6 @@ def create_sentiment_timeline_plot(df: pd.DataFrame, save_path: str = None) -> N
     plt.xticks(rotation=45)
     plt.tight_layout()
     
-    # Save plot
     if save_path is None:
         save_path = get_output_path("sentiment_timeline.png")
     
@@ -101,7 +96,6 @@ def create_sentiment_timeline_plot(df: pd.DataFrame, save_path: str = None) -> N
     logging.info(f"Saved sentiment timeline plot to {save_path}")
 
 
-@timer
 def create_interactive_sentiment_plot(df: pd.DataFrame, save_path: str = None) -> None:
     """
     Create interactive sentiment visualization using Plotly.
@@ -238,7 +232,6 @@ def create_wordcloud_plot(df: pd.DataFrame, sentiment: str = None, save_path: st
     logging.info(f"Saved word cloud to {save_path}")
 
 
-@timer
 def create_comprehensive_dashboard(df: pd.DataFrame) -> None:
     """
     Create a comprehensive analysis dashboard.
