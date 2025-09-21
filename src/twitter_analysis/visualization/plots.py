@@ -10,8 +10,6 @@ from pathlib import Path
 
 from ..utils.config import get_config, get_output_path
 
-
-# Set style
 plt.style.use('seaborn-v0_8')
 sns.set_palette("husl")
 
@@ -27,16 +25,13 @@ def create_sentiment_distribution_plot(df: pd.DataFrame, save_path: str = None) 
     if df.empty or 'sentiment_label' not in df.columns:
         logging.warning("No sentiment data available for plotting")
         return
-    
-    # Create figure with subplots
+
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-    
-    # Count plot
+
     sentiment_counts = df['sentiment_label'].value_counts()
     ax1.pie(sentiment_counts.values, labels=sentiment_counts.index, autopct='%1.1f%%')
     ax1.set_title('Sentiment Distribution')
-    
-    # Bar plot with confidence scores
+
     if 'sentiment_score' in df.columns:
         sns.boxplot(data=df, x='sentiment_label', y='sentiment_score', ax=ax2)
         ax2.set_title('Sentiment Confidence Scores')
@@ -44,7 +39,6 @@ def create_sentiment_distribution_plot(df: pd.DataFrame, save_path: str = None) 
     
     plt.tight_layout()
     
-    # Save plot
     if save_path is None:
         save_path = get_output_path("sentiment_distribution.png")
     
@@ -65,12 +59,10 @@ def create_sentiment_timeline_plot(df: pd.DataFrame, save_path: str = None) -> N
     if df.empty or 'sentiment_label' not in df.columns or 'date' not in df.columns:
         logging.warning("No sentiment timeline data available for plotting")
         return
-    
-    # Prepare data
+
     df_plot = df.copy()
     df_plot['date'] = pd.to_datetime(df_plot['date'])
     
-    # Group by date and sentiment
     timeline_data = df_plot.groupby([
         df_plot['date'].dt.date,
         'sentiment_label'
@@ -108,7 +100,6 @@ def create_interactive_sentiment_plot(df: pd.DataFrame, save_path: str = None) -
         logging.warning("No sentiment data available for plotting")
         return
     
-    # Create subplots
     fig = make_subplots(
         rows=2, cols=2,
         subplot_titles=('Sentiment Distribution', 'Confidence Scores', 
@@ -116,16 +107,14 @@ def create_interactive_sentiment_plot(df: pd.DataFrame, save_path: str = None) -
         specs=[[{"type": "pie"}, {"type": "box"}],
                [{"type": "scatter", "colspan": 2}, None]]
     )
-    
-    # Pie chart
+
     sentiment_counts = df['sentiment_label'].value_counts()
     fig.add_trace(
         go.Pie(labels=sentiment_counts.index, values=sentiment_counts.values,
                name="Sentiment Distribution"),
         row=1, col=1
     )
-    
-    # Box plot for confidence scores
+
     if 'sentiment_score' in df.columns:
         for sentiment in df['sentiment_label'].unique():
             sentiment_data = df[df['sentiment_label'] == sentiment]
@@ -133,8 +122,7 @@ def create_interactive_sentiment_plot(df: pd.DataFrame, save_path: str = None) -
                 go.Box(y=sentiment_data['sentiment_score'], name=sentiment),
                 row=1, col=2
             )
-    
-    # Timeline
+
     if 'date' in df.columns:
         df_timeline = df.copy()
         df_timeline['date'] = pd.to_datetime(df_timeline['date'])
@@ -156,14 +144,12 @@ def create_interactive_sentiment_plot(df: pd.DataFrame, save_path: str = None) -
                 row=2, col=1
             )
     
-    # Update layout
     fig.update_layout(
         title_text="Twitter Sentiment Analysis Dashboard",
         showlegend=True,
         height=800
     )
-    
-    # Save plot
+
     if save_path is None:
         save_path = get_output_path("interactive_sentiment_dashboard.html")
     
@@ -191,20 +177,17 @@ def create_wordcloud_plot(df: pd.DataFrame, sentiment: str = None, save_path: st
     if df.empty or text_column not in df.columns:
         logging.warning("No text data available for word cloud")
         return
-    
-    # Filter by sentiment if specified
+
     df_filtered = df.copy()
     if sentiment and 'sentiment_label' in df.columns:
         df_filtered = df_filtered[df_filtered['sentiment_label'] == sentiment.upper()]
     
-    # Combine all text
     text = ' '.join(df_filtered[text_column].astype(str))
     
     if not text.strip():
         logging.warning("No text available after filtering")
         return
-    
-    # Create word cloud
+
     wordcloud = WordCloud(
         width=800,
         height=400,
@@ -212,8 +195,7 @@ def create_wordcloud_plot(df: pd.DataFrame, sentiment: str = None, save_path: st
         max_words=100,
         colormap='viridis'
     ).generate(text)
-    
-    # Plot
+
     plt.figure(figsize=(10, 5))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
@@ -221,7 +203,6 @@ def create_wordcloud_plot(df: pd.DataFrame, sentiment: str = None, save_path: st
     title = f'Word Cloud - {sentiment} Sentiment' if sentiment else 'Word Cloud - All Tweets'
     plt.title(title)
     
-    # Save plot
     if save_path is None:
         filename = f"wordcloud_{sentiment.lower()}.png" if sentiment else "wordcloud_all.png"
         save_path = get_output_path(filename)
@@ -241,17 +222,14 @@ def create_comprehensive_dashboard(df: pd.DataFrame) -> None:
     """
     logging.info("Creating comprehensive dashboard...")
     
-    # Create individual plots
     create_sentiment_distribution_plot(df)
     create_sentiment_timeline_plot(df)
     create_interactive_sentiment_plot(df)
     
-    # Create word clouds for each sentiment
     if 'sentiment_label' in df.columns:
         for sentiment in df['sentiment_label'].unique():
             create_wordcloud_plot(df, sentiment)
     
-    # Create overall word cloud
     create_wordcloud_plot(df)
     
     logging.info("Comprehensive dashboard created successfully")

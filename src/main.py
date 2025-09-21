@@ -21,14 +21,12 @@ def run_data_collection(num_tweets: int = None, hashtags: List[str] = None) -> N
     """
     logging.info("Starting data collection...")
     
-    # Scrape tweets
     df = scrape_layoff_tweets(num_tweets=num_tweets, hashtags=hashtags)
     
     if df.empty:
         logging.error("No tweets collected")
         return
     
-    # Save raw data
     save_tweets_csv(df, "raw_tweets.csv")
     logging.info(f"Collected and saved {len(df)} tweets")
 
@@ -43,23 +41,20 @@ def run_preprocessing_pipeline(input_file: str = None, output_file: str = None) 
     """
     logging.info("Starting preprocessing pipeline...")
     
-    # Load data
     df = load_or_create_tweets(input_file, scrape_if_missing=False)
     
     if df.empty:
         logging.error("No data to preprocess")
         return
-    
-    # Clean tweets
+
     df_cleaned = pipe(
         df,
         lambda x: clean_tweets_dataframe(x, cleaner=moderate_clean),
         lambda x: x.dropna(subset=['text_cleaned']),
-        lambda x: x[x['text_cleaned'].str.len() > 10]  # Filter very short texts
+        lambda x: x[x['text_cleaned'].str.len() > 10]  
     )
-    
-    # Save cleaned data
-    output_file = output_file or "cleaned_tweets.csv"
+
+    output_file = output_file or "tweets.csv"
     save_tweets_csv(df_cleaned, output_file)
     logging.info(f"Preprocessed and saved {len(df_cleaned)} tweets")
 
